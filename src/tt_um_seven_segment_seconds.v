@@ -12,9 +12,10 @@ module tt_um_seven_segment_seconds #( parameter MAX_COUNT = 24'd10_000_000 ) (
 );
 
     wire reset = ! rst_n;
-    wire [6:0] led_out;
-    assign uo_out[6:0] = led_out;
-    assign uo_out[7] = 1'b0;
+    wire [7:0] led_out;
+
+    wire flag; // indicate led shift.
+
 
     // use bidirectionals as outputs
     assign uio_oe = 8'b11111111;
@@ -24,29 +25,20 @@ module tt_um_seven_segment_seconds #( parameter MAX_COUNT = 24'd10_000_000 ) (
 
     // external clock is 10MHz, so need 24 bit counter
     reg [23:0] second_counter;
-    reg [3:0] digit;
 
     // if external inputs are set then use that as compare count
     // otherwise use the hard coded MAX_COUNT
-    wire [23:0] compare = ui_in == 0 ? MAX_COUNT: {6'b0, ui_in[7:0], 10'b0};
+    wire [23:0] compare = MAX_COUNT;
 
     always @(posedge clk) begin
         // if reset, set counter to 0
         if (reset) begin
             second_counter <= 0;
-            digit <= 0;
         end else begin
             // if up to 16e6
             if (second_counter == compare) begin
                 // reset
                 second_counter <= 0;
-
-                // increment digit
-                digit <= digit + 1'b1;
-
-                // only count from 0 to 9
-                if (digit == 9)
-                    digit <= 0;
 
             end else
                 // increment counter
@@ -54,7 +46,21 @@ module tt_um_seven_segment_seconds #( parameter MAX_COUNT = 24'd10_000_000 ) (
         end
     end
 
-    // instantiate segment display
-    seg7 seg7(.counter(digit), .segments(led_out));
+    assign flag = second_counter >= MAX_COUNT - 24'd1;
+
+    // led water
+	always@(posedge clk or negedge rst_n) begin
+		if(reset)
+			led_out <= 8'b0000_0000;
+		else if(flag)
+			if(led_out == 8'b0000_0000)
+				led_out <= 8'b1111_1110;
+			else
+				led_out <= {led_out[6:0],led_out[7]};
+		else
+			led_out <= led_out;
+	end
+
+	assign uo_out = led_out;
 
 endmodule
