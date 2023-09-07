@@ -49,7 +49,7 @@ module tt_um_seven_segment_seconds #( parameter MAX_COUNT = 24'd10_000_000 ) (
     assign flag = second_counter >= MAX_COUNT - 24'd1;
 
     // led water
-	always@(posedge clk or negedge rst_n) begin
+	always@(posedge clk) begin
 		if(reset)
 			led_out <= 8'b0000_0000;
 		else if(flag)
