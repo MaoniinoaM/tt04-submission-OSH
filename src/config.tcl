@@ -22,7 +22,7 @@ set ::env(PL_RESIZER_BUFFER_OUTPUT_PORTS) 0
 set ::env(SYNTH_READ_BLACKBOX_LIB) 1
 
 # TODO: Remove this once https://github.com/The-OpenROAD-Project/OpenLane/issues/1881 has been fixed
-set ::env(RUN_LINTER) 0
+# set ::env(RUN_LINTER) 0
 
 # reduce wasted space
 set ::env(TOP_MARGIN_MULT) 1

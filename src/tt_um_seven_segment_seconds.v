@@ -12,7 +12,7 @@ module tt_um_seven_segment_seconds #( parameter MAX_COUNT = 24'd10_000_000 ) (
 );
 
     wire reset = ! rst_n;
-    wire [7:0] led_out;
+    reg [7:0] led_out;
 
     wire flag; // indicate led shift.
 
